@@ -1,0 +1,106 @@
+defaults:
+  data_dir: adws/adw_data
+  repo_root: .
+  protected_files:
+    - adws/adw_sssf_config/sssf.config.yaml
+    - justfile
+    - .env
+    - flake.nix
+    - go.mod
+  trace_db: adws/adw_data/sssf.db
+
+agents:
+  - name: planner
+    model: llama.cpp/gemma-4-26B-A4B-it-MXFP4_MOE
+    escalate_to: ollama-cloud/deepseek-v4-pro
+    escalate_when: [parse_retry, gate_retry]
+    escalate_class: planning
+    escalate_thinking: high
+    color: "#60a5fa"
+    purpose: Break a task into ordered build steps for the builder.
+    prompt_engineering:
+      system: adws/adw_data/prompt_engineering/planner/system.md
+      user: adws/adw_data/prompt_engineering/planner/user.md
+    writes: []
+    tools: [read, grep, find, ls]
+
+  - name: builder
+    model: ollama-cloud/deepseek-v4-flash
+    escalate_to: ollama-cloud/deepseek-v4-pro
+    escalate_when: [on_fail]
+    escalate_class: code
+    color: "#4ade80"
+    purpose: Write code changes that realize the plan.
+    prompt_engineering:
+      system: adws/adw_data/prompt_engineering/builder/system.md
+      user: adws/adw_data/prompt_engineering/builder/user.md
+    writes: [".", "!.git", "!adws", "!node_modules", "!vendor", "!flake.nix", "!go.mod", "!go.sum"]
+    tools: null
+    coding_agent: pi
+
+  - name: reviewer
+    model: llama.cpp/gemma-4-26B-A4B-it-MXFP4_MOE
+    escalate_to: ollama-cloud/kimi-k2.6:cloud
+    escalate_when: [parse_retry, gate_retry, field_eq:approved:false, field_lt:findings:4]
+    escalate_class: verification
+    escalate_thinking: high
+    color: "#f472b6"
+    purpose: Review the builder's diff for correctness, security, and clarity.
+    prompt_engineering:
+      system: adws/adw_data/prompt_engineering/reviewer/system.md
+      user: adws/adw_data/prompt_engineering/reviewer/user.md
+    writes: []
+    tools: [read, grep, find, ls]
+
+  - name: scout
+    model: llama.cpp/gemma-4-26B-A4B-it-MXFP4_MOE
+    escalate_to: ollama-cloud/deepseek-v4-flash
+    escalate_when: [parse_retry, gate_retry, field_lt:findings:4]
+    escalate_class: recon
+    color: "#fbbf24"
+    purpose: Map the repo so the planner knows what exists before planning.
+    prompt_engineering:
+      system: adws/adw_data/prompt_engineering/scout/system.md
+      user: adws/adw_data/prompt_engineering/scout/user.md
+    writes: []
+    tools: [read, grep, find, ls]
+
+  - name: documenter
+    model: llama.cpp/gemma-4-26B-A4B-it-MXFP4_MOE
+    escalate_to: ollama-cloud/deepseek-v4-flash
+    escalate_when: [parse_retry, gate_retry]
+    escalate_class: content
+    color: "#c084fc"
+    purpose: Document the change in README and inline comments.
+    prompt_engineering:
+      system: adws/adw_data/prompt_engineering/documenter/system.md
+      user: adws/adw_data/prompt_engineering/documenter/user.md
+    writes: ["README.md"]
+    tools: [read, grep, find, ls, bash]
+
+escalation:
+  targets:
+    planning:
+      primary: ollama-cloud/deepseek-v4-pro
+      fallback: [ollama-cloud/glm-5.2:cloud, ollama-cloud/minimax-m3:cloud]
+      thinking: high
+    code:
+      primary: ollama-cloud/deepseek-v4-flash
+      fallback: [ollama-cloud/deepseek-v4-pro, ollama-cloud/glm-5.2:cloud]
+      thinking: medium
+    verification:
+      primary: ollama-cloud/kimi-k2.6:cloud
+      fallback: [ollama-cloud/deepseek-v4-pro, ollama-cloud/minimax-m3:cloud]
+      thinking: high
+    content:
+      primary: ollama-cloud/kimi-k2.6:cloud
+      fallback: [ollama-cloud/glm-5.2:cloud, ollama-cloud/minimax-m3:cloud]
+      thinking: medium
+    recon:
+      primary: ollama-cloud/deepseek-v4-flash
+      fallback: [ollama-cloud/glm-5.2:cloud, ollama-cloud/minimax-m3:cloud]
+      thinking: medium
+    fable_opus:
+      primary: ollama-cloud/deepseek-v4-pro
+      fallback: [ollama-cloud/kimi-k2.6:cloud, ollama-cloud/glm-5.2:cloud]
+      thinking: high
