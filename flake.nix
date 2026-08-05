@@ -18,7 +18,7 @@
           # modernc.org/sqlite is pure Go -> no CGO. Set via env (buildGoModule
           # puts CGO_ENABLED in env; it can't also be a derivation arg).
           env = { CGO_ENABLED = "0"; };
-          vendorHash = pkgs.lib.fakeHash;  # placeholder — first build prints the real one
+          vendorHash = "sha256-5WaCZ29wuU/aP05IBHTM0WhELYrYoerGlIS3QxoXL5o=";
           subPackages = [ "." ];
           # buildGoModule needs go.sum; the repo has one (generated on first
           # `go mod tidy`). If go.sum is empty (no external deps), vendorHash
