@@ -1,21 +1,28 @@
 {{define "content"}}
-<h1>{{if .Ingredient}}Edit Ingredient{{else}}Add Ingredient{{end}}</h1>
-<p class="text-muted">For: <a href="/inventory/{{.ItemID}}">{{.ItemName}}</a></p>
-<form action="/inventory/{{.ItemID}}/ingredients{{if .Ingredient}}/{{.Ingredient.ID}}{{end}}" method="post">
-    {{if .Ingredient}}<input type="hidden" name="_method" value="PUT">{{end}}
-    <label for="name">Ingredient / Material Name</label>
-    <input type="text" id="name" name="name" value="{{if .Ingredient}}{{.Ingredient.Name}}{{end}}" required>
+<div class="page-header">
+    <h1>{{if .Ingredient}}Edit Ingredient{{else}}Add Ingredient{{end}}</h1>
+    <p class="page-subtitle">For: <a href="/inventory/{{.ItemID}}">{{.ItemName}}</a></p>
+</div>
 
-    <label for="cost_per_unit">Cost Per Unit ($)</label>
-    <input type="number" id="cost_per_unit" name="cost_per_unit" min="0" step="0.001" value="{{if .Ingredient}}{{printf "%.3f" .Ingredient.CostPerUnit}}{{else}}0{{end}}" required>
+<div class="card">
+    <form action="/inventory/{{.ItemID}}/ingredients{{if .Ingredient}}/{{.Ingredient.ID}}{{end}}" method="post">
+        {{if .Ingredient}}<input type="hidden" name="_method" value="PUT">{{end}}
+        <label for="name">Ingredient / Material Name</label>
+        <input type="text" id="name" name="name" value="{{if .Ingredient}}{{.Ingredient.Name}}{{end}}" required>
 
-    <label for="unit">Unit (e.g. oz, ml, g, each)</label>
-    <input type="text" id="unit" name="unit" value="{{if .Ingredient}}{{.Ingredient.Unit}}{{end}}" required>
+        <label for="cost_per_unit">Cost Per Unit ($)</label>
+        <input type="number" id="cost_per_unit" name="cost_per_unit" min="0" step="0.001" value="{{if .Ingredient}}{{printf "%.3f" .Ingredient.CostPerUnit}}{{else}}0{{end}}" required>
 
-    <label for="quantity_per_bottle">Quantity Per {{.ItemUnit}}</label>
-    <input type="number" id="quantity_per_bottle" name="quantity_per_bottle" min="0" step="0.001" value="{{if .Ingredient}}{{printf "%.3f" .Ingredient.QuantityPerBottle}}{{else}}1{{end}}" required>
+        <label for="unit">Unit (e.g. oz, ml, g, each)</label>
+        <input type="text" id="unit" name="unit" value="{{if .Ingredient}}{{.Ingredient.Unit}}{{end}}" required>
 
-    <button type="submit" class="btn btn-primary">{{if .Ingredient}}Save Changes{{else}}Add Ingredient{{end}}</button>
-    <a href="/inventory/{{.ItemID}}" class="btn">Cancel</a>
-</form>
+        <label for="quantity_per_bottle">Quantity Per {{.ItemUnit}}</label>
+        <input type="number" id="quantity_per_bottle" name="quantity_per_bottle" min="0" step="0.001" value="{{if .Ingredient}}{{printf "%.3f" .Ingredient.QuantityPerBottle}}{{else}}1{{end}}" required>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{if .Ingredient}}Save Changes{{else}}Add Ingredient{{end}}</button>
+            <a href="/inventory/{{.ItemID}}" class="btn">Cancel</a>
+        </div>
+    </form>
+</div>
 {{end}}

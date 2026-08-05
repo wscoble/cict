@@ -1,5 +1,7 @@
 {{define "content"}}
-<h1>Cost of Goods Summary</h1>
+<div class="page-header">
+    <h1>Cost of Goods Summary</h1>
+</div>
 {{if .Items}}
 <div class="card-grid">
     <div class="card stat">
@@ -15,7 +17,7 @@
         <div class="stat-label">Total Sales Revenue</div>
     </div>
     <div class="card stat">
-        <div class="stat-value {{if ge .GrossProfit 0.0}}cost-positive{{else}}cost-negative{{end}}">{{printf "$%.2f" .GrossProfit}}</div>
+        <div class="stat-value {{if ge .GrossProfit 0.0}}metric--pos{{else}}metric--neg{{end}}">{{printf "$%.2f" .GrossProfit}}</div>
         <div class="stat-label">Gross Profit (Revenue − Cost)</div>
     </div>
 </div>
@@ -49,6 +51,9 @@
     </tbody>
 </table>
 {{else}}
-<p class="text-muted">No inventory items yet. <a href="/inventory/new">Add an item</a> to see cost summaries.</p>
+<div class="empty">
+    <p>No inventory items yet.</p>
+    <a href="/inventory/new" class="btn btn-primary">Add an item</a>
+</div>
 {{end}}
 {{end}}

@@ -1,5 +1,12 @@
 {{define "content"}}
-<h1>Dashboard</h1>
+<div class="page-header">
+    <h1>Dashboard</h1>
+    <div class="page-actions">
+        <a href="/inventory/new" class="btn btn-primary">Add Item</a>
+        <a href="/sales/new" class="btn">Record a Sale</a>
+    </div>
+</div>
+
 <div class="card-grid">
     <div class="card stat">
         <div class="stat-value">{{.ItemCount}}</div>
@@ -18,10 +25,13 @@
         <div class="stat-label">Inventory Value (at cost)</div>
     </div>
 </div>
+
 <div class="card">
     <h2>Quick Actions</h2>
-    <a href="/inventory/new" class="btn btn-primary">Add Inventory Item</a>
-    <a href="/sales/new" class="btn">Record a Sale</a>
-    <a href="/summary" class="btn">View Cost Summary</a>
+    <div class="page-actions">
+        <a href="/inventory/new" class="btn btn-primary">Add Inventory Item</a>
+        <a href="/sales/new" class="btn">Record a Sale</a>
+        <a href="/summary" class="btn">View Cost Summary</a>
+    </div>
 </div>
 {{end}}
