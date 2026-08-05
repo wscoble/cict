@@ -15,8 +15,10 @@
           src = ./.;
           # go:embed templates/* is relative to the package source, so the
           # module hash covers the embedded files too.
-          vendorHash = null;
-          CGO_ENABLED = 0;
+          # modernc.org/sqlite is pure Go -> no CGO. Set via env (buildGoModule
+          # puts CGO_ENABLED in env; it can't also be a derivation arg).
+          env = { CGO_ENABLED = "0"; };
+          vendorHash = pkgs.lib.fakeHash;  # placeholder — first build prints the real one
           subPackages = [ "." ];
           # buildGoModule needs go.sum; the repo has one (generated on first
           # `go mod tidy`). If go.sum is empty (no external deps), vendorHash
