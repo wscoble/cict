@@ -11,7 +11,7 @@ defaults:
 
 agents:
   - name: planner
-    model: llama.cpp/gemma-4-26B-A4B-it-MXFP4_MOE
+    model: ollama-cloud/deepseek-v4-pro
     escalate_to: ollama-cloud/deepseek-v4-pro
     escalate_when: [parse_retry, gate_retry]
     escalate_class: planning
@@ -21,8 +21,9 @@ agents:
     prompt_engineering:
       system: adws/adw_data/prompt_engineering/planner/system.md
       user: adws/adw_data/prompt_engineering/planner/user.md
-    writes: []
-    tools: [read, grep, find, ls]
+    writes:
+      - specs/
+    tools: [read, grep, find, ls, write, bash]
 
   - name: builder
     model: ollama-cloud/deepseek-v4-flash
@@ -39,7 +40,7 @@ agents:
     coding_agent: pi
 
   - name: reviewer
-    model: llama.cpp/gemma-4-26B-A4B-it-MXFP4_MOE
+    model: ollama-cloud/kimi-k2.6:cloud
     escalate_to: ollama-cloud/kimi-k2.6:cloud
     escalate_when: [parse_retry, gate_retry, field_eq:approved:false, field_lt:findings:4]
     escalate_class: verification
@@ -53,7 +54,7 @@ agents:
     tools: [read, grep, find, ls]
 
   - name: scout
-    model: llama.cpp/gemma-4-26B-A4B-it-MXFP4_MOE
+    model: ollama-cloud/deepseek-v4-flash
     escalate_to: ollama-cloud/deepseek-v4-flash
     escalate_when: [parse_retry, gate_retry, field_lt:findings:4]
     escalate_class: recon
@@ -66,7 +67,7 @@ agents:
     tools: [read, grep, find, ls]
 
   - name: documenter
-    model: llama.cpp/gemma-4-26B-A4B-it-MXFP4_MOE
+    model: ollama-cloud/deepseek-v4-flash
     escalate_to: ollama-cloud/deepseek-v4-flash
     escalate_when: [parse_retry, gate_retry]
     escalate_class: content
