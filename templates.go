@@ -56,10 +56,9 @@ func isHtmxRequest(r *http.Request) bool {
 }
 
 func renderPage(w http.ResponseWriter, r *http.Request, name string, data any) {
-	if isHtmxRequest(r) {
-		renderPartial(w, name, data)
-		return
-	}
+	// hx-boost on <body> fetches the full page and swaps the body itself, so we
+	// always return the full document. (A broken partial path used to return a
+	// 1-byte empty response on boosted clicks, blanking the page.)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	t, err := pageTmpl(name)
 	if err != nil {
@@ -73,8 +72,16 @@ func renderPage(w http.ResponseWriter, r *http.Request, name string, data any) {
 }
 
 func renderPartial(w http.ResponseWriter, name string, data any) {
+	// Explicit hx-get fragment: render just the page's content block. Uses the
+	// per-page template set (pageTmpl) so the "content" block is the right one.
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := _partialTmpls.ExecuteTemplate(w, name, data); err != nil {
+	t, err := pageTmpl(name)
+	if err != nil {
+		log.Printf("load partial %q: %v", name, err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	if err := t.ExecuteTemplate(w, "content", data); err != nil {
 		log.Printf("render partial %q: %v", name, err)
 	}
 }

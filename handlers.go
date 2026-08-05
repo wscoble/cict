@@ -273,10 +273,11 @@ func (s *Store) handleIngredientNew(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		ItemID   int64
-		ItemName string
-		ItemUnit string
-	}{ItemID: itemID, ItemName: item.Name, ItemUnit: item.Unit}
+		ItemID     int64
+		ItemName   string
+		ItemUnit   string
+		Ingredient *Ingredient
+	}{ItemID: itemID, ItemName: item.Name, ItemUnit: item.Unit, Ingredient: nil}
 
 	renderPage(w, r, "ingredient_form.html", pd("Add Ingredient", data))
 }
