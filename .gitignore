@@ -5,3 +5,9 @@ adws/adw_data/sssf.db*
 .env
 __pycache__/
 *.pyc
+
+# build artifacts
+cict
+cict.db
+cict.db-shm
+cict.db-wal

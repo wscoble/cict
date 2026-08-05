@@ -1,0 +1,54 @@
+{{define "content"}}
+<h1>Cost of Goods Summary</h1>
+{{if .Items}}
+<div class="card-grid">
+    <div class="card stat">
+        <div class="stat-value">{{printf "$%.2f" .TotalCost}}</div>
+        <div class="stat-label">Total Inventory Cost</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value">{{printf "$%.2f" .TotalValue}}</div>
+        <div class="stat-label">Total Inventory Value (at selling price)</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value">{{printf "$%.2f" .TotalSales}}</div>
+        <div class="stat-label">Total Sales Revenue</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value {{if ge .GrossProfit 0.0}}cost-positive{{else}}cost-negative{{end}}">{{printf "$%.2f" .GrossProfit}}</div>
+        <div class="stat-label">Gross Profit (Revenue − Cost)</div>
+    </div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th class="text-right">On Hand</th>
+            <th class="text-right">Selling Price</th>
+            <th class="text-right">Cost/Unit</th>
+            <th class="text-right">Total Cost</th>
+            <th class="text-right">Total Value</th>
+            <th class="text-right">Units Sold</th>
+            <th class="text-right">Revenue</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range .Items}}
+        <tr>
+            <td><a href="/inventory/{{.ItemID}}">{{.ItemName}}</a></td>
+            <td class="text-right">{{.QuantityOnHand}}</td>
+            <td class="text-right">{{printf "$%.2f" .SellingPrice}}</td>
+            <td class="text-right">{{printf "$%.2f" .CostPerBottle}}</td>
+            <td class="text-right">{{printf "$%.2f" .TotalItemCost}}</td>
+            <td class="text-right">{{printf "$%.2f" .TotalItemValue}}</td>
+            <td class="text-right">{{.UnitsSold}}</td>
+            <td class="text-right">{{printf "$%.2f" .Revenue}}</td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{else}}
+<p class="text-muted">No inventory items yet. <a href="/inventory/new">Add an item</a> to see cost summaries.</p>
+{{end}}
+{{end}}

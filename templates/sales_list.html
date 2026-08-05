@@ -1,0 +1,32 @@
+{{define "content"}}
+<h1>Sales</h1>
+<a href="/sales/new" class="btn btn-primary mb-1">Record a Sale</a>
+{{if .Sales}}
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Item</th>
+            <th class="text-right">Qty</th>
+            <th class="text-right">Price/Unit</th>
+            <th class="text-right">Total</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range .Sales}}
+        <tr>
+            <td>{{.SaleDate}}</td>
+            <td><a href="/inventory/{{.InventoryItemID}}">{{.ItemName}}</a></td>
+            <td class="text-right">{{.Quantity}}</td>
+            <td class="text-right">{{printf "$%.2f" .SalePrice}}</td>
+            <td class="text-right">{{printf "$%.2f" .Revenue}}</td>
+            <td>{{if .Notes}}{{.Notes}}{{else}}<span class="text-muted">—</span>{{end}}</td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{else}}
+<p class="text-muted">No sales recorded yet. <a href="/sales/new">Record your first sale</a>.</p>
+{{end}}
+{{end}}

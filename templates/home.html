@@ -1,0 +1,27 @@
+{{define "content"}}
+<h1>Dashboard</h1>
+<div class="card-grid">
+    <div class="card stat">
+        <div class="stat-value">{{.ItemCount}}</div>
+        <div class="stat-label">Inventory Items</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value">{{.TotalBottles}}</div>
+        <div class="stat-label">Units On Hand</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value">{{.RecentSales}}</div>
+        <div class="stat-label">Sales This Month</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value">{{printf "$%.2f" .TotalInventoryValue}}</div>
+        <div class="stat-label">Inventory Value (at cost)</div>
+    </div>
+</div>
+<div class="card">
+    <h2>Quick Actions</h2>
+    <a href="/inventory/new" class="btn btn-primary">Add Inventory Item</a>
+    <a href="/sales/new" class="btn">Record a Sale</a>
+    <a href="/summary" class="btn">View Cost Summary</a>
+</div>
+{{end}}
