@@ -33,8 +33,10 @@
             /* semantic */
             --positive: #15803d;
             --positive-bg: #dcfce7;
+            --positive-border: #86efac;
             --negative: #b91c1c;
             --negative-bg: #fee2e2;
+            --negative-border: #fca5a5;
             --warning: #b45309;
             /* shape + depth */
             --radius: 8px;
@@ -177,20 +179,47 @@
 
         /* flash */
         .flash { padding: var(--s-3); border-radius: var(--radius-xs); margin-bottom: var(--s-4); }
-        .flash-success { background: var(--positive-bg); color: var(--positive); border: 1px solid #bbf7d0; }
-        .flash-error { background: var(--negative-bg); color: var(--negative); border: 1px solid #fecaca; }
+        .flash-success { background: var(--positive-bg); color: var(--positive); border: 1px solid var(--positive-border); }
+        .flash-error { background: var(--negative-bg); color: var(--negative); border: 1px solid var(--negative-border); }
 
         /* utilities */
         .text-right { text-align: right; }
         .text-muted { color: var(--text-muted); font-size: var(--fs-sm); }
         .mb-1 { margin-bottom: var(--s-4); }
         .mt-1 { margin-top: var(--s-4); }
+
+        /* focus-visible ring — keyboard accessibility (was missing: blocker) */
+        a:focus-visible, .btn:focus-visible,
+        input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--brand);
+            outline-offset: 2px;
+            border-radius: var(--radius-xs);
+        }
+        /* pressed state — confirms the click landed (was missing) */
+        .btn:active { transform: translateY(0.5px); }
+        .btn-primary:active { background: var(--brand-dark); }
+        .btn-danger:active { background: var(--negative-bg); }
+        /* disabled — for submitted forms / unavailable actions (was missing) */
+        .btn:disabled, input:disabled, select:disabled, textarea:disabled {
+            opacity: 0.55; cursor: not-allowed; pointer-events: none;
+        }
+        /* nav active section (progressive enhancement via inline script) */
+        nav a[aria-current="page"] { color: #fff; font-weight: 700; }
+        /* touch surfaces: bump hit targets to the 44px minimum (was ~30px) */
+        @media (pointer: coarse) {
+            .btn, .btn-sm { min-height: 44px; padding: var(--s-3) var(--s-4); }
+            nav a { min-height: 44px; display: inline-flex; align-items: center; }
+        }
+        /* respect reduced-motion: kill any future transitions/animations */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { transition: none !important; animation: none !important; }
+        }
     </style>
 </head>
 <body hx-boost="true">
     <nav>
         <div class="container">
-            <span class="brand">CICT</span>
+            <a class="brand" href="/">CICT</a>
             <a href="/">Dashboard</a>
             <a href="/inventory">Inventory</a>
             <a href="/sales">Sales</a>
@@ -200,5 +229,17 @@
     <main class="container">
         {{template "content" .Data}}
     </main>
+    <script>
+        // highlight the current section in the nav (progressive enhancement).
+        // re-runs on each htmx body swap since the nav is part of the swapped body.
+        (function () {
+            var p = location.pathname;
+            document.querySelectorAll('nav a[href]').forEach(function (a) {
+                var href = a.getAttribute('href');
+                if (href === '/') { if (p === '/') a.setAttribute('aria-current', 'page'); }
+                else if (p === href || p.startsWith(href + '/')) a.setAttribute('aria-current', 'page');
+            });
+        })();
+    </script>
 </body>
 </html>
